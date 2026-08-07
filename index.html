@@ -1,3 +1,4 @@
+
 <!DOCTYPE html>
 <html lang="pt-BR">
 <head>
@@ -1608,6 +1609,42 @@
     .pin-actions .btn-primary,
     .pin-actions .btn-ghost { flex: 1; }
 
+    /* Botão fullscreen discreto (canto inferior direito) */
+    #fullscreen-btn {
+      position: fixed;
+      right: 10px;
+      bottom: 10px;
+      z-index: 220;
+      width: 50px;
+      height: 50px;
+      margin: 0;
+      padding: 0;
+      border: none;
+      background: transparent;
+      color: rgba(255, 255, 255, 0.32);
+      cursor: pointer;
+      opacity: 0.55;
+      transition: opacity 0.2s ease, color 0.2s ease;
+      line-height: 0;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+    }
+    #fullscreen-btn svg {
+      width: 50px;
+      height: 50px;
+      display: block;
+      filter: drop-shadow(0 1px 2px rgba(0, 0, 0, 0.35));
+    }
+    #fullscreen-btn:hover {
+      opacity: 0.9;
+      color: rgba(255, 255, 255, 0.6);
+    }
+    #fullscreen-btn:focus-visible {
+      outline: 1px solid rgba(255, 255, 255, 0.25);
+      outline-offset: 2px;
+    }
+
     #custom-wrap { display: none; }
     #custom-wrap.show { display: block; }
     #random-wrap.show { display: block; }
@@ -1808,6 +1845,12 @@
 
   <!-- Celebração meta -->
   <div id="celebrate" aria-hidden="true"></div>
+
+  <button type="button" id="fullscreen-btn" title="Tela cheia" aria-label="Tela cheia">
+    <svg id="fullscreen-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+      <path d="M4 9V4h5M20 9V4h-5M4 15v5h5M20 15v5h-5"/>
+    </svg>
+  </button>
 
   <!-- PIN ADM -->
   <div id="pin-overlay" aria-hidden="true">
@@ -3519,11 +3562,46 @@
 
     document.addEventListener('keydown', onKeyDown);
 
+    // ═══════════════════════ FULLSCREEN ═══════════════════════
+    const fullscreenBtn = document.getElementById('fullscreen-btn');
+    function isFullscreen() {
+      return !!(document.fullscreenElement || document.webkitFullscreenElement);
+    }
+    const FS_ICON_ENTER = '<path d="M4 9V4h5M20 9V4h-5M4 15v5h5M20 15v5h-5"/>';
+    const FS_ICON_EXIT = '<path d="M9 4H4v5M15 4h5v5M9 20H4v-5M15 20h5v-5"/>';
+    function updateFullscreenBtn() {
+      if (!fullscreenBtn) return;
+      const on = isFullscreen();
+      const icon = document.getElementById('fullscreen-icon');
+      if (icon) icon.innerHTML = on ? FS_ICON_EXIT : FS_ICON_ENTER;
+      fullscreenBtn.title = on ? 'Sair da tela cheia' : 'Tela cheia';
+      fullscreenBtn.setAttribute('aria-label', on ? 'Sair da tela cheia' : 'Tela cheia');
+    }
+    async function toggleFullscreen() {
+      try {
+        if (isFullscreen()) {
+          if (document.exitFullscreen) await document.exitFullscreen();
+          else if (document.webkitExitFullscreen) document.webkitExitFullscreen();
+        } else {
+          const el = document.documentElement;
+          if (el.requestFullscreen) await el.requestFullscreen();
+          else if (el.webkitRequestFullscreen) el.webkitRequestFullscreen();
+        }
+      } catch (_) { /* navegador bloqueou */ }
+      updateFullscreenBtn();
+    }
+    if (fullscreenBtn) {
+      fullscreenBtn.addEventListener('click', () => toggleFullscreen());
+    }
+    document.addEventListener('fullscreenchange', updateFullscreenBtn);
+    document.addEventListener('webkitfullscreenchange', updateFullscreenBtn);
+
     // ═══════════════════════ BOOT ═══════════════════════
     applyTheme('space');
     updateGoalPanels();
     setTimePreset(1);
     updatePreview();
+    updateFullscreenBtn();
     // Primeiro carregamento / refresh: exige PIN do ADM
     openPinModal(() => unlockAdminAtBoot(), { required: true });
   </script>
