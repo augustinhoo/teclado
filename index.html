@@ -24,7 +24,7 @@
       --font-ui: 'Space Grotesk', sans-serif;
       /* folga do painel ADM em relação à tela (~50px) */
       --admin-gap: clamp(24px, 6.5vh, 50px);
-      --admin-side: clamp(12px, 3vw, 24px);
+      --admin-side: clamp(16px, 4vw, 40px);
     }
 
     html, body {
@@ -325,6 +325,73 @@
       background: linear-gradient(160deg, rgba(12, 40, 70, 0.94), rgba(6, 20, 40, 0.96));
     }
 
+    /* tema: só letras — lousa escolar (foto) */
+    body.theme-letters {
+      --space-deep: #1a3228;
+      --amber: #ffe08a;
+      --foam: #f3ffe8;
+      background: #1a3228;
+    }
+    body.theme-letters #space {
+      background: #1a3228;
+    }
+    /* imagem da lousa */
+    body.theme-letters #space::before {
+      content: '';
+      position: absolute;
+      inset: 0;
+      background: url('lousa.jpg') center center / cover no-repeat;
+      filter: none;
+      transform: none;
+      animation: none;
+      opacity: 1;
+    }
+    body.theme-letters #space::after {
+      content: '';
+      position: absolute;
+      inset: 0;
+      background: rgba(12, 32, 24, 0.38);
+      pointer-events: none;
+      animation: none;
+    }
+    body.theme-letters .nebula,
+    body.theme-letters .star { display: none; }
+    body.theme-letters .panel {
+      border-color: rgba(230, 210, 150, 0.4);
+      background: linear-gradient(160deg, rgba(28, 52, 42, 0.94), rgba(16, 34, 28, 0.96));
+    }
+    body.theme-letters #horizon {
+      background:
+        linear-gradient(180deg,
+          transparent 0%,
+          rgba(200, 140, 50, calc(0.14 + var(--danger-heat) * 0.28)) 40%,
+          rgba(170, 50, 40, calc(0.28 + var(--danger-heat) * 0.5)) 100%);
+      border-top-color: rgba(230, 190, 100, calc(0.4 + var(--danger-heat) * 0.45));
+    }
+
+    .target-letter {
+      position: absolute;
+      width: 110px;
+      height: 120px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      z-index: 8;
+      will-change: top;
+      pointer-events: none;
+      animation: target-bob 2.4s ease-in-out infinite;
+    }
+    .target-letter .letter-glyph {
+      font-family: var(--font-display);
+      font-weight: 900;
+      font-size: 96px;
+      line-height: 1;
+      color: var(--letter-color, #ff8a2a);
+      text-shadow: 0 4px 0 rgba(0, 0, 0, 0.28);
+      -webkit-text-stroke: 5px #fff;
+      paint-order: stroke fill;
+    }
+
     /* alvos emoji (frutas / animais) */
     .target-emoji {
       position: absolute;
@@ -445,7 +512,7 @@
     }
 
     .panel {
-      width: min(560px, 100%);
+      width: min(760px, 100%);
       max-height: calc(100vh - (var(--admin-gap) * 2));
       max-height: calc(100dvh - (var(--admin-gap) * 2));
       overflow-x: hidden;
@@ -457,7 +524,7 @@
       background: linear-gradient(160deg, rgba(18, 40, 72, 0.92), rgba(8, 18, 36, 0.95));
       border: 1px solid rgba(255, 200, 120, 0.25);
       border-radius: 24px;
-      padding: clamp(18px, 4vw, 32px) clamp(14px, 3.5vw, 28px) clamp(16px, 3vw, 28px);
+      padding: clamp(22px, 4vw, 36px) clamp(22px, 4vw, 40px) clamp(20px, 3vw, 32px);
       box-shadow: 0 20px 60px rgba(0, 0, 0, 0.45), inset 0 1px 0 rgba(255,255,255,0.08);
       backdrop-filter: blur(10px);
       flex-shrink: 1;
@@ -469,7 +536,7 @@
       display: none;
     }
 
-    @media (max-width: 640px) {
+    @media (max-width: 720px) {
       .panel {
         width: 100%;
         border-radius: 18px;
@@ -526,7 +593,8 @@
     #restart-btn { display: none; }
     #stop-btn.show,
     #restart-btn.show { display: inline-block; }
-    #back-admin-btn { display: none !important; } /* ADM oculto — atalho Ctrl+Shift+A */
+    #back-admin-btn,
+    #new-config-btn { display: none !important; } /* ADM só via Ctrl+Shift+A */
 
     .stat-pill.countdown .val { color: #7dd3fc; }
     .stat-pill.countdown.urgent .val { color: var(--danger); }
@@ -597,6 +665,7 @@
 
     .mode-toggle {
       display: flex;
+      flex-wrap: wrap;
       gap: 8px;
       margin-bottom: 16px;
     }
@@ -866,6 +935,14 @@
       color: #7dffb2;
       text-shadow: 0 2px 0 rgba(0, 0, 0, 0.4);
     }
+    #speed-flash.penalty #speed-flash-text {
+      color: #ff4d5e;
+      font-size: clamp(84px, 22vw, 200px);
+      text-shadow:
+        0 4px 0 rgba(0, 0, 0, 0.4),
+        0 0 28px rgba(255, 80, 90, 0.75),
+        0 0 56px rgba(220, 40, 50, 0.45);
+    }
     #speed-flash.fx-flash #speed-flash-text {
       animation: speed-alert-flash 1.9s ease-out forwards;
     }
@@ -966,25 +1043,34 @@
       z-index: 5;
     }
 
-    /* Recordes — acima do overlay do PLAY, abaixo do HUD */
+    /* Recordes — card Atual + card ranking */
+    #best-current-card,
     #best-board {
       position: absolute;
-      top: 78px;
       left: 18px;
       z-index: 40;
       pointer-events: none;
-      min-width: 168px;
+      min-width: 188px;
       padding: 10px 14px 11px;
       border-radius: 10px;
-      background: rgba(6, 14, 28, 0.5);
-      border: 1px solid rgba(255, 255, 255, 0.28);
-      box-shadow: 0 4px 18px rgba(0, 0, 0, 0.18);
-      backdrop-filter: blur(2px);
-      -webkit-backdrop-filter: blur(2px);
+      background: rgba(6, 14, 28, 0.32);
+      border: 1px solid rgba(255, 255, 255, 0.22);
+      box-shadow: 0 4px 18px rgba(0, 0, 0, 0.12);
+      backdrop-filter: blur(8px);
+      -webkit-backdrop-filter: blur(8px);
       color: #ffb84a;
       font-family: var(--font-display);
       line-height: 1.35;
     }
+    #best-current-card {
+      top: 78px;
+      margin-top: 50px;
+    }
+    #best-board {
+      top: 168px;
+      margin-top: 50px;
+    }
+    #best-current-card .best-title,
     #best-board .best-title {
       font-size: 11px;
       font-weight: 900;
@@ -994,21 +1080,34 @@
       margin-bottom: 6px;
       text-shadow: 0 1px 2px rgba(0, 0, 0, 0.45);
     }
+    #best-current {
+      font-size: 16px;
+      font-weight: 800;
+      color: #ffe08a;
+      text-shadow: 0 1px 2px rgba(0, 0, 0, 0.4);
+      white-space: nowrap;
+    }
+    #best-current.empty {
+      color: rgba(255, 193, 92, 0.45);
+    }
     #best-board ol {
       list-style: none;
       margin: 0;
       padding: 0;
       display: flex;
       flex-direction: column;
-      gap: 3px;
+      gap: 4px;
     }
     #best-board li {
-      font-size: 13px;
       font-weight: 800;
       color: #ffc15c;
       text-shadow: 0 1px 2px rgba(0, 0, 0, 0.4);
       white-space: nowrap;
+      line-height: 1.2;
     }
+    #best-board li.rank-1 { font-size: 20px; } /* H1 */
+    #best-board li.rank-2 { font-size: 16px; } /* H2 */
+    #best-board li.rank-3 { font-size: 13px; } /* H3 */
     #best-board li.empty {
       color: rgba(255, 193, 92, 0.45);
     }
@@ -1016,7 +1115,7 @@
     /* Controle de dificuldade do jogador (só se ADM liberar) */
     #player-speed {
       position: absolute;
-      top: 188px;
+      top: 340px;
       left: 18px;
       z-index: 40;
       min-width: 168px;
@@ -1657,7 +1756,7 @@
     }
   </style>
 </head>
-<body class="theme-space">
+<body class="theme-letters">
   <div id="space" aria-hidden="true"></div>
   <div id="horizon" data-label="ZONA DE PERIGO" aria-hidden="true"></div>
   <div id="danger-vignette" aria-hidden="true"></div>
@@ -1670,16 +1769,17 @@
 
       <div class="section-label">Tema visual</div>
       <div class="mode-toggle" id="theme-toggle">
-        <button type="button" class="mode-btn theme-btn active" data-theme="space">🌌 Espaço</button>
+        <button type="button" class="mode-btn theme-btn" data-theme="space">🌌 Espaço</button>
         <button type="button" class="mode-btn theme-btn" data-theme="forest">🌲 Floresta</button>
         <button type="button" class="mode-btn theme-btn" data-theme="ocean">🌊 Fundo do mar</button>
+        <button type="button" class="mode-btn theme-btn active" data-theme="letters">🔤 Só letras</button>
       </div>
       <div class="mode-toggle" id="theme-random-toggle">
         <button type="button" class="mode-btn theme-random-btn active" data-theme-random="0">📌 Tema fixo</button>
         <button type="button" class="mode-btn theme-random-btn" data-theme-random="1">🎲 Tema aleatório</button>
       </div>
       <p class="hint" style="margin-top:-10px;margin-bottom:16px">
-        Com “Tema aleatório”, cada missão sorteia Espaço, Floresta ou Mar. Com “Tema fixo”, vale o tema escolhido acima.
+        Com “Tema aleatório”, cada missão sorteia um tema. Com “Tema fixo”, vale o escolhido acima.
       </p>
 
       <div class="section-label">Letras</div>
@@ -1696,6 +1796,8 @@
               <option value="AZ">A–Z (maiúsculas)</option>
               <option value="VOGAIS">Só vogais (A E I O U)</option>
               <option value="FACEIS">Letras fáceis (A B C D E F G O P T)</option>
+              <option value="NUMEROS">Números (0–9)</option>
+              <option value="AZ09">A–Z + números</option>
             </select>
             <p class="hint">As letras caem sorteadas deste alfabeto.</p>
           </div>
@@ -1706,7 +1808,7 @@
         <div class="field">
           <label for="custom-letters">Letras da sessão</label>
           <textarea id="custom-letters" placeholder="Ex.: A A B C M O P..."></textarea>
-          <p class="hint">Digite ou cole as letras. Espaços, vírgulas e números são ignorados. Só A–Z.</p>
+          <p class="hint">Digite ou cole letras e números. Espaços e vírgulas são ignorados. Só A–Z e 0–9.</p>
         </div>
       </div>
 
@@ -1742,9 +1844,9 @@
         <div class="field">
           <label for="speed">Velocidade</label>
           <select id="speed">
-            <option value="verySlow">Mais lenta</option>
+            <option value="verySlow" selected>Mais lenta</option>
             <option value="slow">Lenta</option>
-            <option value="normal" selected>Normal</option>
+            <option value="normal">Normal</option>
             <option value="fast">Rápida</option>
             <option value="advanced">Avançado (acelera)</option>
           </select>
@@ -1752,14 +1854,19 @@
         </div>
         <div class="field">
           <label for="lives">Meteoros perdidos = fim</label>
-          <input type="number" id="lives" min="1" max="99" value="10">
+          <div class="mode-toggle" id="lives-count-toggle" style="margin-bottom:8px">
+            <button type="button" class="mode-btn lives-count-btn active" data-lives-count="1">✅ Contar perdidos</button>
+            <button type="button" class="mode-btn lives-count-btn" data-lives-count="0">🚫 Sem limite</button>
+          </div>
+          <input type="number" id="lives" min="1" max="99" value="5">
+          <p class="hint" id="lives-hint">Ativo: perde o jogo ao atingir o total. Inativo: não conta perdidos e segue até o relógio acabar (ou a meta de pontos).</p>
         </div>
       </div>
 
       <div class="section-label">Permitir dificuldade</div>
       <div class="mode-toggle" id="allow-speed-toggle">
-        <button type="button" class="mode-btn allow-speed-btn active" data-allow-speed="0">🔒 Só ADM</button>
-        <button type="button" class="mode-btn allow-speed-btn" data-allow-speed="1">✏️ Jogador pode mudar</button>
+        <button type="button" class="mode-btn allow-speed-btn" data-allow-speed="0">🔒 Só ADM</button>
+        <button type="button" class="mode-btn allow-speed-btn active" data-allow-speed="1">✏️ Jogador pode mudar</button>
       </div>
       <p class="hint" style="margin-top:-10px;margin-bottom:16px">
         Se liberado, o aluno altera a velocidade na tela do PLAY (antes de começar). Com “Só ADM”, só o professor muda no painel (PIN).
@@ -1782,7 +1889,7 @@
           <span class="lbl" id="score-label">Contidos</span>
           <span class="val"><span id="score">0</span><span id="score-suffix">/<span id="total">50</span></span></span>
         </div>
-        <div class="stat-pill danger">
+        <div class="stat-pill danger" id="missed-pill">
           <span class="lbl">Perdidos</span>
           <span class="val"><span id="missed">0</span>/<span id="max-missed">10</span></span>
         </div>
@@ -1807,12 +1914,17 @@
 
     <div id="playfield"></div>
 
+    <aside id="best-current-card" aria-label="Resultado atual">
+      <div class="best-title">ATUAL</div>
+      <div id="best-current" class="empty">—</div>
+    </aside>
+
     <aside id="best-board" aria-label="Recordes">
       <div class="best-title" id="best-title">MELHOR TEMPO</div>
       <ol id="best-list">
-        <li class="empty">1º - —</li>
-        <li class="empty">2º - —</li>
-        <li class="empty">3º - —</li>
+        <li class="rank-1 empty">1º - —</li>
+        <li class="rank-2 empty">2º - —</li>
+        <li class="rank-3 empty">3º - —</li>
       </ol>
     </aside>
 
@@ -1879,7 +1991,7 @@
       </div>
       <div class="result-actions" id="result-actions-normal">
         <button type="button" class="btn-primary" id="replay-btn">🔄 Mesma missão</button>
-        <button type="button" class="btn-ghost" id="new-config-btn">⚙️ Nova configuração</button>
+        <button type="button" class="btn-ghost hidden" id="new-config-btn">⚙️ Nova configuração</button>
       </div>
       <div class="result-actions hidden" id="result-actions-pause">
         <button type="button" class="btn-primary" id="continue-btn">▶️ Continuar</button>
@@ -1893,16 +2005,18 @@
     const ALPHABETS = {
       AZ: 'ABCDEFGHIJKLMNOPQRSTUVWXYZ',
       VOGAIS: 'AEIOU',
-      FACEIS: 'ABCDEFGOPT'
+      FACEIS: 'ABCDEFGOPT',
+      NUMEROS: '0123456789',
+      AZ09: 'ABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789'
     };
 
     const SPEED = {
-      verySlow: { fall: 27.5,  spawn: 2800, maxOnScreen: 5 }, // = Lenta anterior
-      slow:     { fall: 35.75, spawn: 2154, maxOnScreen: 5 }, // Lenta +30%
-      normal:   { fall: 45,    spawn: 2000, maxOnScreen: 7 }, // mantida
-      fast:     { fall: 70,    spawn: 1400, maxOnScreen: 8 }, // Rápida -50%
+      verySlow: { fall: 27.5,  spawn: 2800, maxOnScreen: 7 }, // = Lenta anterior
+      slow:     { fall: 35.75, spawn: 2154, maxOnScreen: 7 }, // Lenta +30%
+      normal:   { fall: 45,    spawn: 2000, maxOnScreen: 9 }, // mantida
+      fast:     { fall: 70,    spawn: 1400, maxOnScreen: 10 }, // Rápida -50%
       // Avançado: queda +50% vs Normal; spawn +25% (intervalo menor); sobe com o tempo
-      advanced: { fall: 67.5,  spawn: 1200, maxOnScreen: 9 }
+      advanced: { fall: 67.5,  spawn: 1200, maxOnScreen: 11 }
     };
     const SPEED_ORDER = ['verySlow', 'slow', 'normal', 'fast', 'advanced'];
     const SPEED_LABELS = {
@@ -1917,7 +2031,7 @@
     const ADVANCED_FALL_CAP = 630;    // +50% do limite anterior
     const ADVANCED_SPAWN_STEP = 48;   // acompanha spawn +25%
     const ADVANCED_SPAWN_MIN = 288;   // intervalo mínimo (+25% densidade)
-    const ADVANCED_MAX_ON_SCREEN_CAP = 16;
+    const ADVANCED_MAX_ON_SCREEN_CAP = 18;
 
     // PIN da área ADM (proteção simples para sala de aula)
     const ADMIN_PIN = '2131';
@@ -1954,11 +2068,33 @@
         direction: 'up',
         tipKind: 'animal',
         emojis: ['🐠', '🐡', '🐟', '🐙', '🦑', '🦐', '🦀', '🐬', '🐳', '🦭', '🦈', '🐚']
+      },
+      letters: {
+        brand: '🔤 Chuva de Letras',
+        tagline: 'Configure a missão. Letras coloridas na lousa — digite antes que cheguem ao chão!',
+        horizon: 'BORDA DA LOUSA',
+        mascot: '🎒',
+        startEmoji: '🔤',
+        targetMode: 'letter',
+        direction: 'down',
+        tipKind: 'letra',
+        emojis: null
       }
     };
 
+    const LETTER_COLORS = [
+      { color: '#ff5c6a', glow: 'rgba(255, 92, 106, 0.6)' },
+      { color: '#ff8a2a', glow: 'rgba(255, 138, 42, 0.6)' },
+      { color: '#ffd56a', glow: 'rgba(255, 213, 106, 0.55)' },
+      { color: '#3ddc97', glow: 'rgba(61, 220, 151, 0.55)' },
+      { color: '#4da3ff', glow: 'rgba(77, 163, 255, 0.55)' },
+      { color: '#ff6b9d', glow: 'rgba(255, 107, 157, 0.55)' },
+      { color: '#b388ff', glow: 'rgba(179, 136, 255, 0.55)' },
+      { color: '#2ee6d6', glow: 'rgba(46, 230, 214, 0.55)' }
+    ];
+
     const state = {
-      theme: 'space',         // space | forest | ocean
+      theme: 'letters',       // space | forest | ocean | letters
       letterMode: 'random',   // random | custom
       goalMode: 'clock',      // clock | points
       timeLimitMs: 60000,     // 0 = sem tempo
@@ -1967,7 +2103,8 @@
       meteors: [],
       score: 0,
       missed: 0,
-      maxMissed: 10,
+      maxMissed: 5,
+      countMisses: true,      // ADM: se false, não conta perdidos / não perde por vidas
       total: 50,
       running: false,
       over: false,
@@ -1985,12 +2122,14 @@
       tipRotateTimer: null,
       advancedTimer: null,
       lastFrame: 0,
-      speedKey: 'normal',
-      currentFall: 45,
-      currentSpawn: 2000,
-      allowPlayerSpeed: false, // ADM: jogador pode mudar dificuldade no PLAY
+      speedKey: 'verySlow',
+      currentFall: 27.5,
+      currentSpawn: 2800,
+      allowPlayerSpeed: true,  // ADM: jogador pode mudar dificuldade no PLAY
       randomTheme: false,      // ADM: sorteia tema a cada missão
-      pinGateRequired: false,  // true no boot: PIN obrigatório
+      missPenaltyCount: 0,     // a cada 2 erros na zona → -1 ponto
+      wrongKeyCount: 0,        // a cada 2 teclas sem letra na tela → -1 ponto
+      pinGateRequired: false,  // true só se o modal for aberto como obrigatório
       endReason: '' // win | lose | timeup | stopped
     };
 
@@ -2012,6 +2151,12 @@
         { text: 'Olha o animal… digite a letra dele!', left: '👀', right: '🐙' },
         { text: 'Mãos no teclado, mergulhador!', left: '🤿', right: '✨' },
         { text: 'Cada letra certa captura um amigo do mar!', left: '🐡', right: '🌟' }
+      ],
+      letters: [
+        { text: 'Aperte no teclado a letra que está caindo!', left: '⌨️', right: '🔤' },
+        { text: 'Olha a letra colorida… digite ela!', left: '👀', right: '✨' },
+        { text: 'Mãos no teclado, campeão!', left: '🎒', right: '🌟' },
+        { text: 'Cada letra certa some da tela!', left: '💥', right: '🔤' }
       ]
     };
     const TIP_COLORS = ['#ff8a2a', '#ff6b9d', '#3ddc97', '#4da3ff', '#ff5c6a'];
@@ -2109,6 +2254,8 @@
           b.style.animationDelay = (-Math.random() * dur) + 's';
           frag.appendChild(b);
         }
+      } else if (theme === 'letters') {
+        // fundo colorido limpo — sem partículas extras
       } else {
         const nebulae = [
           { left: '22%', top: '36%', w: 420, h: 160, color: 'rgba(150, 135, 155, 0.22)', tx: '14px', ty: '-8px', d: '26s' },
@@ -2157,7 +2304,7 @@
     function applyTheme(theme) {
       const t = THEMES[theme] ? theme : 'space';
       state.theme = t;
-      document.body.classList.remove('theme-space', 'theme-forest', 'theme-ocean');
+      document.body.classList.remove('theme-space', 'theme-forest', 'theme-ocean', 'theme-letters');
       document.body.classList.add('theme-' + t);
 
       const cfg = THEMES[t];
@@ -2194,7 +2341,7 @@
     function parseCustomLetters(text) {
       return (text || '')
         .toUpperCase()
-        .replace(/[^A-Z]/g, '')
+        .replace(/[^A-Z0-9]/g, '')
         .split('');
     }
 
@@ -2380,18 +2527,18 @@
     let flashBusy = false;
     let lastCheerAt = 0;
 
-    function showGameFlash(msg, { randomPos = false, cheer = false } = {}) {
+    function showGameFlash(msg, { randomPos = false, cheer = false, penalty = false } = {}) {
       const el = document.getElementById('speed-flash');
       const text = document.getElementById('speed-flash-text');
       if (!el || !text) return;
-      // incentivo não sobrepõe o "Mais rápido!"
-      if (randomPos && flashBusy) return;
+      // incentivo não sobrepõe alertas centrais
+      if (randomPos && flashBusy && !penalty) return;
 
       SPEED_FLASH_FX.forEach(c => el.classList.remove(c));
-      el.classList.remove('show', 'random-pos', 'cheer');
+      el.classList.remove('show', 'random-pos', 'cheer', 'penalty');
       text.textContent = msg;
 
-      if (randomPos) {
+      if (randomPos && !penalty) {
         // evita bordas / HUD / cantos extremos
         const x = 14 + Math.random() * 72;
         const y = 22 + Math.random() * 52;
@@ -2402,6 +2549,8 @@
       } else {
         el.style.removeProperty('--fx');
         el.style.removeProperty('--fy');
+        if (cheer) el.classList.add('cheer');
+        if (penalty) el.classList.add('penalty');
       }
 
       void el.offsetWidth;
@@ -2411,7 +2560,7 @@
       flashBusy = true;
       clearTimeout(speedFlashTimer);
       speedFlashTimer = setTimeout(() => {
-        el.classList.remove('show', 'random-pos', 'cheer', ...SPEED_FLASH_FX);
+        el.classList.remove('show', 'random-pos', 'cheer', 'penalty', ...SPEED_FLASH_FX);
         el.setAttribute('aria-hidden', 'true');
         flashBusy = false;
       }, 2000);
@@ -2420,6 +2569,40 @@
     function showSpeedFlash(msg = 'Mais rápido! ⚡') {
       showGameFlash(msg, { randomPos: false, cheer: false });
       zapSound();
+    }
+
+    function showPenaltyFlash() {
+      showGameFlash('-1 ponto', { randomPos: false, penalty: true });
+      beep(160, 0.14, 'sawtooth', 0.035);
+    }
+
+    function penalizeOnePoint() {
+      if (!state.running || state.over || state.paused) return;
+      if (state.score <= 0) return;
+      state.score = Math.max(0, state.score - 1);
+      updateHud();
+      showPenaltyFlash();
+      say('Perdeu 1 ponto!');
+    }
+
+    /** A cada 2 erros (zona de perigo) → -1 ponto */
+    function registerDangerMissPenalty() {
+      state.missPenaltyCount = (state.missPenaltyCount || 0) + 1;
+      if (state.missPenaltyCount < 2) return;
+      state.missPenaltyCount = 0;
+      penalizeOnePoint();
+    }
+
+    /** A cada 2 teclas sem a letra na tela → -1 ponto */
+    function registerWrongKeyPenalty() {
+      state.wrongKeyCount = (state.wrongKeyCount || 0) + 1;
+      if (state.wrongKeyCount < 2) return;
+      state.wrongKeyCount = 0;
+      penalizeOnePoint();
+    }
+
+    function letterIsOnScreen(letter) {
+      return state.meteors.some(m => m.alive && m.letter === letter);
     }
 
     function maybeShowCheerFlash(forcedMsg) {
@@ -2664,7 +2847,7 @@
     }
 
     function closePinModal() {
-      // No boot / refresh o PIN é obrigatório — não fecha sem acertar
+      // Se o PIN estiver marcado como obrigatório, não fecha sem acertar
       if (state.pinGateRequired) {
         pinError.textContent = '';
         pinInput.value = '';
@@ -2705,6 +2888,23 @@
       openPinModal(() => backToAdmin());
     }
 
+    function updateNewConfigBtnVisibility() {
+      const btn = document.getElementById('new-config-btn');
+      if (!btn) return;
+      btn.classList.add('hidden');
+    }
+
+    function updateLivesCountUI() {
+      const on = !!document.querySelector('.lives-count-btn.active[data-lives-count="1"]');
+      livesInput.disabled = !on;
+      livesInput.style.opacity = on ? '1' : '0.45';
+    }
+
+    function updateMissedPillVisibility() {
+      const pill = document.getElementById('missed-pill');
+      if (pill) pill.classList.toggle('hidden', !state.countMisses);
+    }
+
     function unlockAdminAtBoot() {
       showScreen('admin');
       updatePreview();
@@ -2722,19 +2922,23 @@
       return m + ':' + String(r).padStart(2, '0');
     }
 
-    // ── Recordes (localStorage): top 3 por modo ──
-    const BEST_STORAGE_KEY = 'chuva-meteoros-best-v1';
+    // ── Recordes (localStorage): última partida + top 3 por modo ──
+    const BEST_STORAGE_KEY = 'chuva-meteoros-best-v2';
 
     function loadBestRecords() {
       try {
         const data = JSON.parse(localStorage.getItem(BEST_STORAGE_KEY));
-        if (!data || typeof data !== 'object') return { clock: [], points: [] };
+        if (!data || typeof data !== 'object') {
+          return { clock: [], points: [], lastClock: null, lastPoints: null };
+        }
         return {
           clock: Array.isArray(data.clock) ? data.clock : [],
-          points: Array.isArray(data.points) ? data.points : []
+          points: Array.isArray(data.points) ? data.points : [],
+          lastClock: data.lastClock || null,
+          lastPoints: data.lastPoints || null
         };
       } catch (_) {
-        return { clock: [], points: [] };
+        return { clock: [], points: [], lastClock: null, lastPoints: null };
       }
     }
 
@@ -2753,21 +2957,33 @@
     function renderBestBoard() {
       const titleEl = document.getElementById('best-title');
       const listEl = document.getElementById('best-list');
-      if (!titleEl || !listEl) return;
+      const currentEl = document.getElementById('best-current');
+      if (!titleEl || !listEl || !currentEl) return;
 
       const mode = state.goalMode === 'points' ? 'points' : 'clock';
       titleEl.textContent = mode === 'points' ? 'MELHOR PONTUAÇÃO' : 'MELHOR TEMPO';
 
-      const records = loadBestRecords()[mode] || [];
+      const all = loadBestRecords();
+      const last = mode === 'points' ? all.lastPoints : all.lastClock;
+      if (last) {
+        currentEl.textContent = formatBestValue(last);
+        currentEl.classList.remove('empty');
+      } else {
+        currentEl.textContent = '—';
+        currentEl.classList.add('empty');
+      }
+
+      const records = all[mode] || [];
       listEl.innerHTML = '';
       for (let i = 0; i < 3; i++) {
         const li = document.createElement('li');
+        li.className = `rank-${i + 1}`;
         const entry = records[i];
         if (entry) {
           li.textContent = `${i + 1}º - ${formatBestValue(entry)}`;
         } else {
           li.textContent = `${i + 1}º - —`;
-          li.className = 'empty';
+          li.classList.add('empty');
         }
         listEl.appendChild(li);
       }
@@ -2780,15 +2996,17 @@
 
       const mode = state.goalMode === 'points' ? 'points' : 'clock';
       const all = loadBestRecords();
+      const entry = { score, time, at: Date.now() };
+
+      if (mode === 'points') all.lastPoints = entry;
+      else all.lastClock = entry;
+
       const list = all[mode].slice();
-      list.push({ score, time, at: Date.now() });
+      list.push(entry);
 
       if (mode === 'points') {
-        // maior pontuação; empate → menor tempo
         list.sort((a, b) => b.score - a.score || a.time - b.time);
       } else {
-        // modo relógio: melhor = mais pontos no tempo; empate → mais tempo jogado
-        // exibimos o tempo da partida no placar (MELHOR TEMPO)
         list.sort((a, b) => b.score - a.score || b.time - a.time);
       }
 
@@ -2798,6 +3016,11 @@
     }
 
     function updateDangerVisuals() {
+      if (!state.countMisses) {
+        horizonEl.style.setProperty('--danger-heat', '0');
+        dangerVignette.style.setProperty('--vignette', '0');
+        return;
+      }
       const heat = state.maxMissed > 0
         ? Math.min(1, state.missed / state.maxMissed)
         : 0;
@@ -2897,11 +3120,16 @@
       state.letterPool = pool.slice();
       state.score = 0;
       state.missed = 0;
+      state.missPenaltyCount = 0;
+      state.wrongKeyCount = 0;
       state.total = state.goalMode === 'points' ? state.targetPoints : 0;
       state.maxMissed = clamp(parseInt(livesInput.value, 10) || 10, 1, 99);
       livesInput.value = state.maxMissed;
+      state.countMisses = !!document.querySelector('.lives-count-btn.active[data-lives-count="1"]');
       state.allowPlayerSpeed = !!document.querySelector('.allow-speed-btn.active[data-allow-speed="1"]');
       applySpeedKey(speedSelect.value || 'normal');
+      updateNewConfigBtnVisibility();
+      updateMissedPillVisibility();
       state.running = false;
       state.over = false;
       state.paused = false;
@@ -3093,9 +3321,16 @@
       const theme = THEMES[state.theme] || THEMES.space;
       const direction = theme.direction || 'down';
       const isEmoji = theme.targetMode === 'emoji';
+      const isLetter = theme.targetMode === 'letter';
       const el = document.createElement('div');
 
-      if (isEmoji) {
+      if (isLetter) {
+        const tone = LETTER_COLORS[Math.floor(Math.random() * LETTER_COLORS.length)];
+        el.className = 'target-letter';
+        el.innerHTML = `<span class="letter-glyph">${letter}</span>`;
+        el.style.setProperty('--letter-color', tone.color);
+        el.style.setProperty('--letter-glow', tone.glow);
+      } else if (isEmoji) {
         el.className = 'target-emoji';
         el.innerHTML = `
           <span class="emoji-face">${pickThemeEmoji()}</span>
@@ -3127,8 +3362,8 @@
           `brightness(${(0.9 + Math.random() * 0.2).toFixed(2)})`;
       }
 
-      const wrapW = isEmoji ? 112 : 96;
-      const wrapH = isEmoji ? 128 : 140;
+      const wrapW = isLetter ? 110 : isEmoji ? 112 : 96;
+      const wrapH = isLetter ? 120 : isEmoji ? 128 : 140;
       const margin = 12;
       const maxX = Math.max(margin, playfield.clientWidth - wrapW - margin);
       const x = margin + Math.random() * Math.max(1, maxX - margin);
@@ -3149,7 +3384,7 @@
         x,
         y,
         size: wrapH,
-        bodySize: isEmoji ? 70 : 68,
+        bodySize: isLetter ? 96 : isEmoji ? 70 : 68,
         speed,
         direction,
         alive: true
@@ -3185,18 +3420,25 @@
       if (!m.alive || state.over) return;
       m.alive = false;
       m.el.remove();
-      state.missed++;
-      updateHud();
-      flashDangerZone();
-      playfield.classList.remove('shake');
-      void playfield.offsetWidth;
-      playfield.classList.add('shake');
-      beep(120, 0.18, 'sawtooth', 0.03);
-      say(state.theme === 'ocean' ? 'Ops! Escapou um!' : 'Ops! Passou um!');
-      mascotEl.textContent = THEMES[state.theme].mascot === '🧑‍🚀' ? '😮' : THEMES[state.theme].mascot;
 
-      if (state.missed >= state.maxMissed) {
-        endGame('lose');
+      if (state.countMisses) {
+        state.missed++;
+        updateHud();
+        flashDangerZone();
+        playfield.classList.remove('shake');
+        void playfield.offsetWidth;
+        playfield.classList.add('shake');
+        beep(120, 0.18, 'sawtooth', 0.03);
+        say(state.theme === 'ocean' ? 'Ops! Escapou um!' : 'Ops! Passou um!');
+        mascotEl.textContent = THEMES[state.theme].mascot === '🧑‍🚀' ? '😮' : THEMES[state.theme].mascot;
+        registerDangerMissPenalty();
+
+        if (state.missed >= state.maxMissed) {
+          endGame('lose');
+        }
+      } else {
+        // Sem limite: some o alvo, mas não conta nem encerra
+        beep(140, 0.08, 'triangle', 0.02);
       }
     }
 
@@ -3213,7 +3455,10 @@
 
       const boom = document.createElement('div');
       boom.className = 'explosion';
-      boom.textContent = state.theme === 'ocean' ? '💧' : state.theme === 'forest' ? '✨' : '💥';
+      boom.textContent = state.theme === 'ocean' ? '💧'
+        : state.theme === 'forest' ? '✨'
+        : state.theme === 'letters' ? '🌟'
+        : '💥';
       boom.style.left = (cx - 21) + 'px';
       boom.style.top = (cy - 21) + 'px';
       playfield.appendChild(boom);
@@ -3272,12 +3517,23 @@
       const key = e.key;
       if (!key || key.length !== 1) return;
       const letter = key.toUpperCase();
-      if (letter < 'A' || letter > 'Z') return;
+      const isAlpha = letter >= 'A' && letter <= 'Z';
+      const isDigit = letter >= '0' && letter <= '9';
+      if (!isAlpha && !isDigit) return;
 
       e.preventDefault();
+      // letra existe entre os objetos vivos na tela?
+      if (!letterIsOnScreen(letter)) {
+        beep(180, 0.06, 'triangle', 0.02);
+        registerWrongKeyPenalty();
+        return;
+      }
       const hit = destroyLetter(letter);
       if (!hit) {
         beep(180, 0.06, 'triangle', 0.02);
+        registerWrongKeyPenalty();
+      } else {
+        state.wrongKeyCount = 0;
       }
     }
 
@@ -3388,6 +3644,10 @@
           emoji = '🐠🐙🐡🐬';
           title = 'Os animais fugiram!';
           msg = `${state.maxMissed} animais chegaram na zona de perigo. Contidos: ${state.score}. Vamos tentar de novo?`;
+        } else if (state.theme === 'letters') {
+          emoji = '🔤🅰️🅱️✨';
+          title = 'As letras passaram!';
+          msg = `${state.maxMissed} letras chegaram na zona de perigo. Contidos: ${state.score}. Vamos tentar de novo?`;
         } else {
           emoji = '☄️💥☄️💥';
           title = 'Os meteoros passaram!';
@@ -3406,6 +3666,7 @@
       document.getElementById('r-missed').textContent = state.missed;
       document.getElementById('r-time').textContent = formatTime(state.elapsed);
       setResultActions('normal');
+      updateNewConfigBtnVisibility();
       recordBestIfNeeded();
 
       if (win) {
@@ -3485,6 +3746,15 @@
       btn.addEventListener('click', () => {
         document.querySelectorAll('.allow-speed-btn').forEach(b => b.classList.toggle('active', b === btn));
         state.allowPlayerSpeed = btn.dataset.allowSpeed === '1';
+        updateNewConfigBtnVisibility();
+      });
+    });
+
+    document.querySelectorAll('.lives-count-btn').forEach(btn => {
+      btn.addEventListener('click', () => {
+        document.querySelectorAll('.lives-count-btn').forEach(b => b.classList.toggle('active', b === btn));
+        state.countMisses = btn.dataset.livesCount === '1';
+        updateLivesCountUI();
       });
     });
 
@@ -3597,13 +3867,14 @@
     document.addEventListener('webkitfullscreenchange', updateFullscreenBtn);
 
     // ═══════════════════════ BOOT ═══════════════════════
-    applyTheme('space');
+    applyTheme('letters');
     updateGoalPanels();
     setTimePreset(1);
     updatePreview();
+    updateLivesCountUI();
     updateFullscreenBtn();
-    // Primeiro carregamento / refresh: exige PIN do ADM
-    openPinModal(() => unlockAdminAtBoot(), { required: true });
+    // Carrega direto na missão padrão (ADM só via Ctrl+Shift+A + PIN)
+    prepareGame();
   </script>
 </body>
 </html>
